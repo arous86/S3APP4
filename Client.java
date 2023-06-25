@@ -16,7 +16,7 @@ public class Client {
             System.out.println("Connected to server at " + serverIP + ":" + 44419);
 
             // Sending the file to the server
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[4096];
             int bytesRead;
 
             while ((bytesRead = fileInputStream.read(buffer)) != -1) {
