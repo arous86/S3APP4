@@ -1,26 +1,34 @@
-import java.io.*;
-import java.net.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.Socket;
 
 public class Client {
     public static void main(String[] args) {
+        String serverIP = args[0];
+        String filePath = args[1];
+
         try {
-            Socket clientSocket = new Socket("localhost", 30000); // Connexion au serveur sur le port 30000
-            System.out.println("Connecté au serveur.");
+            File file = new File(filePath);
+            FileInputStream fileInputStream = new FileInputStream(file);
 
-            // Flux de lecture et d'écriture pour la communication avec le serveur
-            BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            PrintWriter outToServer = new PrintWriter(clientSocket.getOutputStream(), true);
+            Socket clientSocket = new Socket(serverIP, 44419);
+            System.out.println("Connected to server at " + serverIP + ":" + 44419);
 
-            String messageToSend = "Bonjour, serveur !";
-            outToServer.println(messageToSend); // Envoi du message au serveur
+            // Sending the file to the server
+            byte[] buffer = new byte[1024];
+            int bytesRead;
 
-            String serverResponse = inFromServer.readLine(); // Lecture de la réponse du serveur
-            System.out.println("Réponse du serveur : " + serverResponse);
+            while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+                clientSocket.getOutputStream().write(buffer, 0, bytesRead);
+            }
 
-            // Fermeture des flux et du socket
-            inFromServer.close();
-            outToServer.close();
+            System.out.println("File sent successfully.");
+
+            fileInputStream.close();
             clientSocket.close();
+
+            System.out.println("Client terminated.");
         } catch (IOException e) {
             e.printStackTrace();
         }

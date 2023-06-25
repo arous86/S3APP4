@@ -4,7 +4,7 @@ import java.net.*;
 public class Server {
     public static void main(String[] args) {
         try {
-            ServerSocket serverSocket = new ServerSocket(30000); // Création du socket serveur sur le port 30000
+            ServerSocket serverSocket = new ServerSocket(41000); // Création du socket serveur sur le port 30000
             System.out.println("Serveur en attente de connexions...");
 
             Socket clientSocket = serverSocket.accept(); // Attente de la connexion d'un client
