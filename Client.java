@@ -1,6 +1,4 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 
 public class Client {
@@ -8,29 +6,29 @@ public class Client {
         String serverIP = args[0];
         String filePath = args[1];
 
+        BufferedReader reader = null;
+
         try {
-            File file = new File(filePath);
-            FileInputStream fileInputStream = new FileInputStream(file);
+            FileReader fileReader = new FileReader(filePath);
+            reader = new BufferedReader(fileReader);
 
-            Socket clientSocket = new Socket(serverIP, 44419);
-            System.out.println("Connected to server at " + serverIP + ":" + 44419);
-
-            // Sending the file to the server
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-
-            while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-                clientSocket.getOutputStream().write(buffer, 0, bytesRead);
+            String line;
+            StringBuilder content = new StringBuilder();
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append("\n");
             }
 
-            System.out.println("File sent successfully.");
-
-            fileInputStream.close();
-            clientSocket.close();
-
-            System.out.println("Client terminated.");
+            System.out.println(content.toString());
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error reading the file: " + e.getMessage());
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (IOException e) {
+                System.err.println("Error closing the file: " + e.getMessage());
+            }
         }
     }
 }
