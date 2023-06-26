@@ -1,12 +1,9 @@
-import java.io.*;
-import java.net.Socket;
-import java.io.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class Client {
+public class ClientApp {
     public static byte[] method(File file)
             throws IOException
     {
