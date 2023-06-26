@@ -1,12 +1,22 @@
+package couche;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Math.floor;
-
+/**
+ * descritpion
+ *
+ */
 public class Transport {
     private int PAQUET_MAX_LENGHT = 200;
 
-    public List<Trame> construirePaquets(String filename, byte[] buffer)
+    /**
+     * construit les paquets pour l'envoies de fichier
+     * @param filename
+     * @param buffer
+     * @return
+     */
+    public List<Trame> EnvoyerFichier(String filename, byte[] buffer)
     {
         List<Trame> listeFrame = new ArrayList<Trame>();
 
