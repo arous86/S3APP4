@@ -43,7 +43,8 @@ public class Liaison {
             byte[] trameBytes = instance.ConcatenateTrame(trame);
             Physique phys = Physique.getInstance();
             phys.SendData(serverIP, port, trameBytes);
-            
+
+
             // TODO: Attendre un ACK
 
             // TODO: Si ACK reçu, envoyer la prochaine trame
