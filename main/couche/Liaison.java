@@ -1,4 +1,4 @@
-package couche;
+package main.couche;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class Liaison {
         System.arraycopy(trame.data, 0, result, trame.CRC.length + trame.header.length, trame.data.length);
         return result;
     }
-    public static void EnvoyerTrames(ArrayList<Trame> _trames, String serverIP, int port) {
+    public void EnvoyerTrames(ArrayList<Trame> _trames, String serverIP, int port) {
         instance.trames = _trames;
         for (Trame trame : instance.trames) {
             long crc = GenerateCRC(trame.data);

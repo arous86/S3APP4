@@ -1,4 +1,4 @@
-package couche;
+package main.couche;
 
 public class Trame{
     private final int TAILLE_FIXE = 6;

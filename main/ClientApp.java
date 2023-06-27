@@ -1,9 +1,15 @@
+package main;
+
+import main.couche.Transport;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
 public class ClientApp {
+    private static int port = 44419;
+
     public static byte[] method(File file)
             throws IOException
     {
@@ -46,5 +52,9 @@ public class ClientApp {
 
         // Print the name of the file not the path
         System.out.println(path.getName());
+
+        Transport t = new Transport();
+        t.EnvoyerFichier(path.getName(),array, serverIP, port);
+
     }
 }
