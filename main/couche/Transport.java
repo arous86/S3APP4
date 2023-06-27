@@ -92,4 +92,7 @@ public class Transport {
         }
         return listeTrame;
     }
+
+    public void ReceiveFrame(byte[] data) {
+    }
 }
