@@ -56,20 +56,27 @@ public class Physique {
             return false;
         }
     }
-    public void ReceiveFrame(int port){
+    public void ReceiveFrames(int port){
+        Liaison liaison = Liaison.getInstance();
         try{
             ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("Serveur en attente de connexions...");
 
             Socket clientSocket = serverSocket.accept(); // Attente de la connexion d'un client
             System.out.println("Client connecté.");
-
+            clientSocket.setSoTimeout(1000);
             // Lecture des données envoyées par le client
             InputStream inputStream = clientSocket.getInputStream();
-            byte[] receivedData = new byte[256];
 
-            Liaison liaison = Liaison.getInstance();
-            liaison.RecevoirTrames(receivedData, serverSocket);
+            byte[] receivedData = new byte[256];
+            int numbytes = 0;
+            try{
+                numbytes = inputStream.read(receivedData);
+            }catch(Exception e){
+                System.out.println("timeout du serveur");
+            }
+
+            liaison.RecevoirTrames(receivedData,numbytes, clientSocket);
 
         } catch (IOException e) {
             e.printStackTrace();

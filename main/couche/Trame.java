@@ -58,8 +58,8 @@ public class Trame{
 
         return bArr;
     }
-    public boolean decode(byte[] bArr){
-        if (bArr.length < TAILLE_ENTETE) return false;
+    public boolean decode(byte[] bArr, int nbytes){
+        if (nbytes < TAILLE_ENTETE) return false;
 
         try {
             int ptr = 0;

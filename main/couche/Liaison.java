@@ -70,51 +70,38 @@ public class Liaison {
             }
         }
     }
-    public static void RecevoirTrames(byte[] receivedData, ServerSocket serverSocket) throws IOException {
-        byte[] CRC = new byte[8];
-        byte[] header = new byte[6];
-        byte[] data = new byte[receivedData.length - CRC.length - header.length];
+    public static void RecevoirTrames(byte[] receivedData,int numbytes, Socket clientSocket) throws IOException {
+        Trame trameRecu = new Trame();
+        trameRecu.decode(receivedData, numbytes);
 
-        System.arraycopy(receivedData, 0, CRC, 0, CRC.length);
-        System.arraycopy(receivedData, CRC.length, header, 0, header.length);
-        System.arraycopy(receivedData, CRC.length + header.length, data, 0, data.length);
+        long crc = GenerateCRC(trameRecu.toByteForCRC());
+        Trame trameAck = new Trame();
+        if (crc == trameRecu.CRC) {
+            trameAck.id = trameRecu.id;
+            trameAck.ACK = 0;
+            trameAck.dataLenght = 0;
+            trameAck.CRC = GenerateCRC(trameAck.toByteForCRC());
 
-        long crc = GenerateCRC(receivedData);
-        byte[] crcBytes = instance.longToBytes(crc);
-
-        byte[] trameBytes = new byte[header.length];
-        if (Arrays.equals(CRC, crcBytes)) {
-            // copy the 4 first bytes of header
-            System.arraycopy(header, 0, trameBytes, 0, 4);
-            // place 0 in the 5th byte and 0 in the 6th byte
-            trameBytes[4] = 0;
-            trameBytes[5] = 0;
-            // Couche transport reçoit la trame
-            Transport transport = new Transport();
-            transport.ReceiveFrame(data);
+            Physique p = Physique.getInstance();
         }
         else {
-            // copy the 4 first bytes of header
-            System.arraycopy(header, 0, trameBytes, 0, 4);
-            // place 1 in the 5th byte and 0 in the 6th byte
-            trameBytes[4] = 1;
-            trameBytes[5] = 0;
+            trameAck.id = trameRecu.id;
+            trameAck.ACK = 1;
+            trameAck.dataLenght = 0;
+            trameAck.CRC = GenerateCRC(trameAck.toByteForCRC());
+
+            Physique p = Physique.getInstance();
         }
 
         // Repondre au client
-        Socket clientSocket = serverSocket.accept();
         DataOutputStream outToClient = new DataOutputStream(clientSocket.getOutputStream());
 
         // Envoyer trameBytes au client
-        outToClient.write(trameBytes);
+        outToClient.write(trameAck.toByte());
 
         outToClient.flush();
 
-        // Fermeture des flux et des sockets
-        outToClient.close();
-        clientSocket.close();
 
-        // TODO: Envoyer les trames à la couche transport
 
     }
     }

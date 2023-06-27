@@ -9,7 +9,7 @@ import java.net.*;
 public class Server {
     public static void main(String[] args) {
         Physique p = Physique.getInstance();
-        p.ReceiveFrame(44419);
+        p.ReceiveFrames(44419);
 
         Transport t = Transport.getInstance();
         byte[] receivedData = t.SendFile();
