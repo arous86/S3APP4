@@ -16,6 +16,7 @@ public class Physique {
     private static Socket socket;
     public boolean SendFrame(String serverIP, int port, byte[] frameToSend) {
         try {
+
             if (socket == null || socket.isClosed()) {
                 socket = new Socket(serverIP, port);
                 System.out.println("Connected to server at " + serverIP + ":" + port);
@@ -25,9 +26,25 @@ public class Physique {
             OutputStream outputStream = socket.getOutputStream();
             outputStream.write(frameToSend);
 
+
             // Attente de la réponse du serveur (ACK)
+            //
             InputStream inputStream = socket.getInputStream();
-            byte ack = (byte) inputStream.read();
+            System.out.println("Hello World!");
+            while(inputStream.available() == 0) {
+                // delay 10 ms
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            byte[] buffer = new byte[inputStream.available()];
+
+            System.out.println(inputStream.read(buffer)); // Problème ici
+            byte ack = buffer[4];
+
             System.out.println("ACK reçu : " + ack);
             if (ack == 0) {
                 return true;

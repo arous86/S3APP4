@@ -35,13 +35,16 @@ public class Liaison {
     }
 
     public void EnvoyerTrames(ArrayList<Trame> _trames, String serverIP, int port) {
+
         instance.trames = _trames;
         for (Trame trame : instance.trames) {
             byte[] tmp_trameBytes = trame.toByteForCRC();
 
+
             trame.CRC = GenerateCRC(tmp_trameBytes);
             // concatenate crc first and trame.crc after
             byte[] trameBytes = trame.toByte();
+
 
             Physique phys = Physique.getInstance();
 
@@ -50,7 +53,9 @@ public class Liaison {
             boolean isAckReceived = false;
 
             while (!isAckReceived && tentative < maxTentatives) {
+
                 if (phys.SendFrame(serverIP, port, trameBytes)) {
+                    // Start timer
                     System.out.println("Trame envoyée");
                     isAckReceived = true;
                 } else {

@@ -9,6 +9,16 @@ import java.util.Vector;
  *
  */
 public class Transport {
+    // singleton
+    private static Transport instance = null;
+    public static Transport getInstance()
+    {
+        if(instance == null)
+        {
+            instance = new Transport();
+        }
+        return instance;
+    }
     private final int PAQUET_MAX_LENGHT = 200;
 
     private int totalPaquets = 0;
@@ -16,6 +26,7 @@ public class Transport {
 
     public boolean EnvoyerFichier(String filename, byte[] buffer, String serverIP, int port)
     {
+
         listeTrame = new ArrayList<Trame>();
 
         int numDataPaquet = (int)(Math.ceil((double)buffer.length / (double)PAQUET_MAX_LENGHT)); //https://stackoverflow.com/questions/7139382/java-rounding-up-to-an-int-using-math-ceil
@@ -93,7 +104,21 @@ public class Transport {
         return listeTrame;
     }
 
+    // array of bytes dynamic
+    //declare a private byte array
+    private byte[] _bytes = new byte[0];
+    public byte[] arrayConcat(byte[] a, byte[] b) {
+        byte[] result = new byte[a.length + b.length];
+        System.arraycopy(a,0,result,0,a.length);
+        System.arraycopy(b,0,result,a.length,b.length);
+        return result;
+    }
     public void ReceiveFrame(byte[] data) {
+        byte[] temp = arrayConcat(_bytes, data);
+        _bytes = temp;
 
+    }
+    public byte[] SendFile() {
+        return _bytes;
     }
 }
