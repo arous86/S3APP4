@@ -18,7 +18,7 @@ public class Transport {
     {
         listeTrame = new ArrayList<Trame>();
 
-        int numDataPaquet = (buffer.length-1) / (PAQUET_MAX_LENGHT+1); //https://stackoverflow.com/questions/7139382/java-rounding-up-to-an-int-using-math-ceil
+        int numDataPaquet = (int)(Math.ceil((double)buffer.length / (double)PAQUET_MAX_LENGHT)); //https://stackoverflow.com/questions/7139382/java-rounding-up-to-an-int-using-math-ceil
 
         //construire premier paquet
         Trame premier = buildFirstPaquet(filename, numDataPaquet);
@@ -69,13 +69,35 @@ public class Transport {
 
     private ArrayList<Trame> buildDataPaquets(byte[] buffer, int numpaquets)
     {
+        ArrayList<Trame> listeTrame = new ArrayList<Trame>();
+        int ptr = 0;
         for (int i=0; i<numpaquets; i++)
         {
-            Trame temp = new Trame();
+            Trame tempTrame = new Trame();
+            ///DATA
+            int byteToCopy = PAQUET_MAX_LENGHT;
+            int dataleft = buffer.length - ptr;
+            if(dataleft<PAQUET_MAX_LENGHT) { byteToCopy = dataleft; }
+            tempTrame.data = new byte[byteToCopy];
+            for(int j =0; j< byteToCopy; j++)
+            {
+                tempTrame.data[j] = buffer[ptr++];
+            }
 
-            //set header
-            //set data
+            //HEADER
+            //id
+            int id = totalPaquets++;
+            tempTrame.header[0] = (byte)(id >> 24);
+            tempTrame.header[1] = (byte)(id >> 16);
+            tempTrame.header[2] = (byte)(id >> 8);
+            tempTrame.header[3] = (byte)(id);
+            //ack
+            tempTrame.header[4] = 0;
+            //datalenght
+            tempTrame.header[5] = (byte)(byteToCopy); //ne dépasse jamais 200 donc fit dans 8 bit même si on perd une partie du int
+
+            listeTrame.add(tempTrame);
         }
-        return new ArrayList<Trame>();
+        return listeTrame;
     }
 }
