@@ -92,6 +92,9 @@ public class Liaison {
             // place 0 in the 5th byte and 0 in the 6th byte
             trameBytes[4] = 0;
             trameBytes[5] = 0;
+            // Couche transport reçoit la trame
+            Transport transport = new Transport();
+            transport.ReceiveFrame(data);
         }
         else {
             // copy the 4 first bytes of header
@@ -105,7 +108,8 @@ public class Liaison {
         Socket clientSocket = serverSocket.accept();
         DataOutputStream outToClient = new DataOutputStream(clientSocket.getOutputStream());
 
-        outToClient.writeByte(trameBytes[4]);
+        // Envoyer trameBytes au client
+        outToClient.write(trameBytes);
 
         outToClient.flush();
 
