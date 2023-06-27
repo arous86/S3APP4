@@ -1,7 +1,6 @@
 package main;
 
-import main.couche.Physique;
-import main.couche.Transport;
+import main.couche.*;
 
 import java.io.*;
 import java.net.*;
@@ -12,7 +11,29 @@ public class Server {
         p.ReceiveFrames(44419);
 
         Transport t = Transport.getInstance();
-        byte[] receivedData = t.SendFile();
-        System.out.println("Received data : " + receivedData);
+        System.out.println("received filename : " + t.ci.filename);
+
+        File yourFile = new File("/reception/"+t.ci.filename);
+        try {
+            yourFile.getParentFile().mkdirs();
+            yourFile.createNewFile(); // if file already exists will do nothing
+        } catch (IOException e) {
+            System.out.println("could not create file");
+            return;
+        }
+        FileOutputStream oFile;
+        try {
+            oFile = new FileOutputStream(yourFile, false);
+        } catch (FileNotFoundException e) {
+            System.out.println("could not create filestream");
+            return;
+        }
+
+        try {
+            oFile.write(t.receivedFile());
+        } catch (IOException e) {
+            System.out.println("could not create write to file");
+            return;
+        }
     }
 }

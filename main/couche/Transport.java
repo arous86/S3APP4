@@ -1,6 +1,7 @@
 package main.couche;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
@@ -9,6 +10,7 @@ import java.util.Vector;
  *
  */
 public class Transport {
+    public clientInstance ci = new clientInstance();
     // singleton
     private static Transport instance = null;
     public static Transport getInstance()
@@ -103,10 +105,6 @@ public class Transport {
         }
         return listeTrame;
     }
-
-    // array of bytes dynamic
-    //declare a private byte array
-    private byte[] _bytes = new byte[0];
     public byte[] arrayConcat(byte[] a, byte[] b) {
         byte[] result = new byte[a.length + b.length];
         System.arraycopy(a,0,result,0,a.length);
@@ -114,11 +112,21 @@ public class Transport {
         return result;
     }
     public void ReceiveFrame(byte[] data) {
-        byte[] temp = arrayConcat(_bytes, data);
-        _bytes = temp;
-
+        byte[] temp = arrayConcat(ci._bytes, data);
+        ci._bytes = temp;
+        ci.numPaquets++;
     }
-    public byte[] SendFile() {
-        return _bytes;
+
+    public void ReceiveFirstFrame(byte[] data)
+    {
+        ci.numPaquets = 0;
+        ci.totalPaquets = ((data[0] & 0xff) << 24) |
+                        ((data[1] & 0xff) << 16) |
+                        ((data[2] & 0xff) << 8) |
+                        (data[3] & 0xff);
+        ci.filename = new String(Arrays.copyOfRange(data, 4, data.length-1));
+    }
+    public byte[] receivedFile() {
+        return ci._bytes;
     }
 }
