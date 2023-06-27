@@ -6,6 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.zip.CRC32;
 
 public class Liaison {
@@ -77,7 +78,7 @@ public class Liaison {
         byte[] crcBytes = instance.longToBytes(crc);
 
         byte[] trameBytes = new byte[header.length];
-        if (CRC.equals(crcBytes)) {
+        if (Arrays.equals(CRC, crcBytes)) {
             // copy the 4 first bytes of header
             System.arraycopy(header, 0, trameBytes, 0, 4);
             // place 0 in the 5th byte and 0 in the 6th byte
