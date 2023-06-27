@@ -124,7 +124,7 @@ public class Transport {
                         ((data[1] & 0xff) << 16) |
                         ((data[2] & 0xff) << 8) |
                         (data[3] & 0xff);
-        ci.filename = new String(Arrays.copyOfRange(data, 4, data.length-1));
+        ci.filename = new String(Arrays.copyOfRange(data, 4, data.length));
     }
     public byte[] receivedFile() {
         return ci._bytes;

@@ -14,12 +14,13 @@ public class Physique {
         return instance;
     }
     private static Socket socket;
-    public boolean SendFrame(String serverIP, int port, byte[] frameToSend) {
+    public Trame SendFrame(String serverIP, int port, byte[] frameToSend) {
         try {
 
             if (socket == null || socket.isClosed()) {
                 socket = new Socket(serverIP, port);
                 System.out.println("Connected to server at " + serverIP + ":" + port);
+                socket.setSoTimeout(1000);
             }
 
             // Envoi des données au serveur
@@ -31,29 +32,21 @@ public class Physique {
             //
             InputStream inputStream = socket.getInputStream();
             System.out.println("Hello World!");
-            while(inputStream.available() == 0) {
-                // delay 10 ms
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
 
-            byte[] buffer = new byte[inputStream.available()];
 
-            System.out.println(inputStream.read(buffer)); // Problème ici
-            byte ack = buffer[4];
+            byte[] buffer = new byte[1024];
 
-            System.out.println("ACK reçu : " + ack);
-            if (ack == 0) {
-                return true;
-            } else {
-                return false;
-            }
+            int numbytes = inputStream.read(buffer); // Problème ici
+
+            Trame trameRecu = new Trame();
+            trameRecu.decode(buffer, numbytes);
+
+            return trameRecu;
+
+
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
+            return new Trame();
         }
     }
     public void ReceiveFrames(int port){

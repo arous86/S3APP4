@@ -54,22 +54,28 @@ public class Liaison {
             int maxTentatives = 3; // Nombre maximum de tentatives pour l'envoi d'une trame
             int tentative = 0; // Compteur de tentatives
             boolean isAckReceived = false;
-
+            Trame trameRecu;
             while (!isAckReceived && tentative < maxTentatives) {
-
-                if (phys.SendFrame(serverIP, port, trameBytes)) {
-                    // Start timer
-                    System.out.println("Trame envoyée");
-                    isAckReceived = true;
+                trameRecu = phys.SendFrame(serverIP, port, trameBytes);
+                long crc = GenerateCRC(trameRecu.toByteForCRC());
+                if (crc == trameRecu.CRC) {
+                    if (trameRecu.ACK == 0) {
+                        // Start timer
+                        System.out.println("Trame ok");
+                        isAckReceived = true;
+                    } else {
+                        System.out.println("Trame non ok - ack");
+                        tentative++;
+                    }
                 } else {
-                    System.out.println("Trame non envoyée");
+                    System.out.println("Trame non ok - crc");
                     tentative++;
                 }
             }
 
             if (tentative == maxTentatives) {
                 System.out.println("Trame non envoyée après 3 tentatives");
-                // TODO: Abandonner
+                return;
             }
         }
     }
