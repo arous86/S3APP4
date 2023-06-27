@@ -35,14 +35,17 @@ public class Liaison {
         System.arraycopy(trame.data, 0, result, trame.CRC.length + trame.header.length, trame.data.length);
         return result;
     }
-    public static void EnvoyerTrames(ArrayList<Trame> _trames) {
+    public static void EnvoyerTrames(ArrayList<Trame> _trames, String serverIP, int port) {
         instance.trames = _trames;
         for (Trame trame : instance.trames) {
             long crc = GenerateCRC(trame.data);
             trame.CRC = instance.longToBytes(crc);
             byte[] trameBytes = instance.ConcatenateTrame(trame);
-            // TODO: Envoyer trameBytes à la couche physique
+            Physique phys = Physique.getInstance();
+            phys.SendData(serverIP, port, trameBytes);
+            
             // TODO: Attendre un ACK
+
             // TODO: Si ACK reçu, envoyer la prochaine trame
             // TODO: Si ACK non reçu, réenvoyer la trame
             // TODO: Si ACK non reçu après 3 essais, abandonner
