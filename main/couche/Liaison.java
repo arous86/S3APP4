@@ -32,24 +32,15 @@ public class Liaison {
         buffer.putLong(x);
         return buffer.array();
     }
-    public byte[] ConcatenateTrame(Trame trame) {
-        // concatenate header and data
-        byte[] trameBytes = new byte[trame.header.length + trame.data.length];
-        System.arraycopy(trame.header, 0, trameBytes, 0, trame.header.length);
-        System.arraycopy(trame.data, 0, trameBytes, trame.header.length, trame.data.length);
-        return trameBytes;
-    }
+
     public void EnvoyerTrames(ArrayList<Trame> _trames, String serverIP, int port) {
         instance.trames = _trames;
         for (Trame trame : instance.trames) {
-            byte[] tmp_trameBytes = instance.ConcatenateTrame(trame);
+            byte[] tmp_trameBytes = trame.toByteForCRC();
 
-            long crc = GenerateCRC(tmp_trameBytes);
-            trame.CRC = instance.longToBytes(crc);
+            trame.CRC = GenerateCRC(tmp_trameBytes);
             // concatenate crc first and trame.crc after
-            byte[] trameBytes = new byte[trame.CRC.length + tmp_trameBytes.length];
-            System.arraycopy(trame.CRC, 0, trameBytes, 0, trame.CRC.length);
-            System.arraycopy(tmp_trameBytes, 0, trameBytes, trame.CRC.length, tmp_trameBytes.length);
+            byte[] trameBytes = trame.toByte();
 
             Physique phys = Physique.getInstance();
 

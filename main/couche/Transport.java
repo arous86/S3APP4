@@ -54,15 +54,11 @@ public class Transport {
 
         ////HEADER
         //id
-        int id = totalPaquets++;
-        tempTrame.header[0] = (byte)(id >> 24);
-        tempTrame.header[1] = (byte)(id >> 16);
-        tempTrame.header[2] = (byte)(id >> 8);
-        tempTrame.header[3] = (byte)(id);
+        tempTrame.id = totalPaquets++;
         //ack
-        tempTrame.header[4] = 0;
+        tempTrame.ACK = 0;
         //datalenght
-        tempTrame.header[5] = (byte)(tempTrame.data.length); //ne dépasse jamais 200 donc fit dans 8 bit même si on perd une partie du int
+        tempTrame.dataLenght = (byte)(tempTrame.data.length); //ne dépasse jamais 200 donc fit dans 8 bit même si on perd une partie du int
 
         return tempTrame;
     }
@@ -86,15 +82,11 @@ public class Transport {
 
             //HEADER
             //id
-            int id = totalPaquets++;
-            tempTrame.header[0] = (byte)(id >> 24);
-            tempTrame.header[1] = (byte)(id >> 16);
-            tempTrame.header[2] = (byte)(id >> 8);
-            tempTrame.header[3] = (byte)(id);
+            tempTrame.id = totalPaquets++;
             //ack
-            tempTrame.header[4] = 0;
+            tempTrame.ACK = 0;
             //datalenght
-            tempTrame.header[5] = (byte)(byteToCopy); //ne dépasse jamais 200 donc fit dans 8 bit même si on perd une partie du int
+            tempTrame.dataLenght = (byte)(byteToCopy); //ne dépasse jamais 200 donc fit dans 8 bit même si on perd une partie du int
 
             listeTrame.add(tempTrame);
         }
