@@ -113,6 +113,8 @@ public class Liaison {
         outToClient.close();
         clientSocket.close();
 
+        // TODO: Envoyer les trames à la couche transport
+
     }
     }
 
