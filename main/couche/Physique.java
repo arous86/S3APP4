@@ -6,6 +6,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Physique {
+    /**
+     * Cette classe s'occupe d'établir la connexion entre le client et le serveur
+     * et d'envoyer les trames au serveur. Elle s'occupe aussi de recevoir du
+     * côté du serveur où elle reste en écoute passive.
+     */
     private static Physique instance = null;
     public static Physique getInstance() {
         if (instance == null) {

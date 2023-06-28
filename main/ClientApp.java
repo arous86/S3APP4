@@ -6,10 +6,23 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
+/**
+ * Cette classe est le point d'entrée du client.
+ * Elle s'occupe de lire le fichier à envoyer et de l'envoyer au serveur.
+ */
 
 public class ClientApp {
+    /**
+     * Le port utilisé pour la connexion.
+     */
     private static int port = 44419;
 
+    /**
+     * Cette méthode permet de convertir un fichier en un tableau de bytes.
+     * @param file Le fichier à convertir.
+     * @return Le tableau de bytes correspondant au fichier.
+     * @throws IOException
+     */
     public static byte[] method(File file)
             throws IOException
     {
@@ -32,6 +45,12 @@ public class ClientApp {
         // Returning above byte array
         return arr;
     }
+
+    /**
+     * Cette méthode est le point d'entrée du client.
+     * @param args Les arguments passés au programme. args[0] doit être l'adresse IP du serveur. args[1] doit être le chemin vers le fichier à envoyer.
+     * @throws IOException
+     */
     public static void main(String[] args)
             throws IOException
     {
