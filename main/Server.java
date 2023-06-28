@@ -4,7 +4,16 @@ import main.couche.*;
 
 import java.io.*;
 
+/**
+ * Cette classe s'occupe d'établir la connexion entre le client et le serveur
+ * et d'envoyer les trames au serveur. Elle s'occupe aussi de recevoir du
+ * côté du serveur où elle reste en écoute passive.
+ */
 public class Server {
+    /**
+     * Cette méthode est le point d'entrée du serveur.
+     * @param args Aucun argument n'est requis.
+     */
     public static void main(String[] args) {
         Physique p = Physique.getInstance();
         p.ReceiveFrames(44419);
