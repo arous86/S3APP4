@@ -3,7 +3,6 @@ package main;
 import main.couche.*;
 
 import java.io.*;
-import java.net.*;
 
 public class Server {
     public static void main(String[] args) {
@@ -13,7 +12,7 @@ public class Server {
         Transport t = Transport.getInstance();
         System.out.println("received filename : " + t.ci.filename);
 
-        File yourFile = new File("/reception/"+t.ci.filename);
+        File yourFile = new File("reception/"+t.ci.filename);
         try {
             yourFile.getParentFile().mkdirs();
             yourFile.createNewFile(); // if file already exists will do nothing
@@ -33,7 +32,6 @@ public class Server {
             oFile.write(t.receivedFile());
         } catch (IOException e) {
             System.out.println("could not create write to file");
-            return;
         }
     }
 }

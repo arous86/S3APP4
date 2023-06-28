@@ -56,5 +56,7 @@ public class ClientApp {
         Transport t = new Transport();
         t.EnvoyerFichier(path.getName(),array, serverIP, port);
 
+        System.out.println("Envoie terminé");
+
     }
 }

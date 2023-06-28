@@ -2,8 +2,6 @@ package main.couche;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Vector;
 
 /**
  * descritpion
@@ -112,6 +110,9 @@ public class Transport {
         return result;
     }
     public void ReceiveFrame(byte[] data) {
+        if (data == null ) {return;}
+        if (data.length <= 0) {return;}
+
         byte[] temp = arrayConcat(ci._bytes, data);
         ci._bytes = temp;
         ci.numPaquets++;

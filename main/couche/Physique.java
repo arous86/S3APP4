@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class Physique {
     private static Physique instance = null;
@@ -26,12 +27,13 @@ public class Physique {
             // Envoi des données au serveur
             OutputStream outputStream = socket.getOutputStream();
             outputStream.write(frameToSend);
+            System.out.println("sent to server:");
+            System.out.println(Arrays.toString(frameToSend));
 
 
             // Attente de la réponse du serveur (ACK)
             //
             InputStream inputStream = socket.getInputStream();
-            System.out.println("Hello World!");
 
 
             byte[] buffer = new byte[1024];
@@ -66,7 +68,7 @@ public class Physique {
             try {
                 numbytes = inputStream.read(receivedData);
             } catch (Exception e) {
-                System.out.println("timeout du serveur");
+                System.out.println("timeout du serveur1");
                 return;
             }
             liaison.RecevoirPremiereTrame(receivedData, numbytes, clientSocket);
@@ -75,10 +77,12 @@ public class Physique {
                 try {
                     numbytes = inputStream.read(receivedData);
                 } catch (Exception e) {
-                    System.out.println("timeout du serveur");
+                    System.out.println(e.getMessage());
+                    System.out.println("timeout du serveur2");
                 }
-
-                liaison.RecevoirTrames(receivedData, numbytes, clientSocket);
+                if(numbytes != -1) {
+                    liaison.RecevoirTrames(receivedData, numbytes, clientSocket);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

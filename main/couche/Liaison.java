@@ -23,6 +23,7 @@ public class Liaison {
     private static long GenerateCRC(byte[] bytes) {
         // Créer une instance de CRC32
         CRC32 crc32 = new CRC32();
+        crc32.reset();
 
         // Mettre à jour le CRC32 avec les données
         crc32.update(bytes);
@@ -31,34 +32,20 @@ public class Liaison {
         return crc32.getValue();
     }
 
-    public byte[] longToBytes(long x) {
-        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
-        buffer.putLong(x);
-        return buffer.array();
-    }
-
     public void EnvoyerTrames(ArrayList<Trame> _trames, String serverIP, int port) {
 
         instance.trames = _trames;
-        for (Trame trame : instance.trames) {
-            byte[] tmp_trameBytes = trame.toByteForCRC();
+        Physique phys = Physique.getInstance();
+        for (Trame trameSent : instance.trames) {
 
-
-            trame.CRC = GenerateCRC(tmp_trameBytes);
-            // concatenate crc first and trame.crc after
-            byte[] trameBytes = trame.toByte();
-
-
-            Physique phys = Physique.getInstance();
+            trameSent.CRC = GenerateCRC(trameSent.toByteForCRC());
 
             int maxTentatives = 3; // Nombre maximum de tentatives pour l'envoi d'une trame
             int tentative = 0; // Compteur de tentatives
             boolean isAckReceived = false;
             Trame trameRecu;
             while (!isAckReceived && tentative < maxTentatives) {
-                trameRecu = phys.SendFrame(serverIP, port, trameBytes);
-                long crc = GenerateCRC(trameRecu.toByteForCRC());
-                if (crc == trameRecu.CRC) {
+                trameRecu = phys.SendFrame(serverIP, port, trameSent.toByte());
                     if (trameRecu.ACK == 0) {
                         // Start timer
                         System.out.println("Trame ok");
@@ -67,10 +54,6 @@ public class Liaison {
                         System.out.println("Trame non ok - ack");
                         tentative++;
                     }
-                } else {
-                    System.out.println("Trame non ok - crc");
-                    tentative++;
-                }
             }
 
             if (tentative == maxTentatives) {
@@ -78,6 +61,7 @@ public class Liaison {
                 return;
             }
         }
+        phys.CloseSocket();
     }
 
     public static void RecevoirTrames(byte[] receivedData, int numbytes, Socket clientSocket) throws IOException {
@@ -86,6 +70,7 @@ public class Liaison {
 
         long crc = GenerateCRC(trameRecu.toByteForCRC());
         Trame trameAck = new Trame();
+
         if (crc == trameRecu.CRC) {
             trameAck.id = trameRecu.id;
             trameAck.ACK = 0;
@@ -115,6 +100,7 @@ public class Liaison {
 
         long crc = GenerateCRC(trameRecu.toByteForCRC());
         Trame trameAck = new Trame();
+
         if (crc == trameRecu.CRC) {
             trameAck.id = trameRecu.id;
             trameAck.ACK = 0;
