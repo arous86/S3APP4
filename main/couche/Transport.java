@@ -4,13 +4,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * descritpion
- *
+ * Cette classe permet de transformer les donnees de l'application en paquet
+ * prêt pour l'envoie au server. Chaque paquet est encapsule d'une entête. *
  */
 public class Transport {
     public clientInstance ci = new clientInstance();
     // singleton
     private static Transport instance = null;
+
+    /**
+     * Permet d'obtenir le singleton
+     * @return instance singleton de Transport
+     */
     public static Transport getInstance()
     {
         if(instance == null)
@@ -24,8 +29,17 @@ public class Transport {
     private int totalPaquets = 0;
     public ArrayList<Trame> listeTrame;
 
+    /**
+     * Fonction d'encapsulation des donnees en paquets
+     * @param filename nom du fichier (sans le chemin d'acces)
+     * @param buffer array de byte[] de donnees du fichier a envoyer
+     * @param serverIP ip du serveur de reception
+     * @param port port du serveur de reception
+     * @return l'etat de reussite de la fonction
+     */
     public boolean EnvoyerFichier(String filename, byte[] buffer, String serverIP, int port)
     {
+        if (buffer == null){return false;}
 
         listeTrame = new ArrayList<Trame>();
 
@@ -36,7 +50,7 @@ public class Transport {
 
         listeTrame.add(premier);
 
-        //construire paquets de données
+        //construire paquets de donnees
         listeTrame.addAll(buildDataPaquets(buffer, numDataPaquet));
 
         Liaison l = Liaison.getInstance();
@@ -45,6 +59,12 @@ public class Transport {
         return true;
     }
 
+    /**
+     * Cree le premier paquet de l'envoie, contient le nombre de paquet et le nom de fichier
+     * @param filename nom du fichier
+     * @param numpaquets nombre de paquets de donnees
+     * @return Objet Trame (paquet)
+     */
     private Trame buildFirstPaquet(String filename, int numpaquets)
     {
         Trame tempTrame = new Trame();
@@ -69,11 +89,18 @@ public class Transport {
         //ack
         tempTrame.ACK = 0;
         //datalenght
-        tempTrame.dataLenght = (byte)(tempTrame.data.length); //ne dépasse jamais 200 donc fit dans 8 bit même si on perd une partie du int
+        tempTrame.dataLenght = (byte)(tempTrame.data.length); //ne depasse jamais 200 donc fit dans 8 bit même si on perd une partie du int
 
         return tempTrame;
     }
 
+    /**
+     *  Fonction permetant de separer les donnees du fichier en groupe de 200
+     *  bytes max et de les encapsulers en Trames (paquets)
+     * @param buffer donnees du fichier a separer en paquets
+     * @param numpaquets nombre de paquets de donnees
+     * @return Liste d'objet Trame (paquet)
+     */
     private ArrayList<Trame> buildDataPaquets(byte[] buffer, int numpaquets)
     {
         ArrayList<Trame> listeTrame = new ArrayList<Trame>();
@@ -90,25 +117,37 @@ public class Transport {
             {
                 tempTrame.data[j] = buffer[ptr++];
             }
-
             //HEADER
             //id
             tempTrame.id = totalPaquets++;
             //ack
             tempTrame.ACK = 0;
             //datalenght
-            tempTrame.dataLenght = (byte)(byteToCopy); //ne dépasse jamais 200 donc fit dans 8 bit même si on perd une partie du int
+            tempTrame.dataLenght = (byte)(byteToCopy); //ne depasse jamais 200 donc fit dans 8 bit même si on perd une partie du int
 
             listeTrame.add(tempTrame);
         }
         return listeTrame;
     }
-    public byte[] arrayConcat(byte[] a, byte[] b) {
+
+    /**
+     * permet de concatener deux tableau de bytes
+     * @param a tableau de byte 1
+     * @param b tableau de byte 2
+     * @return tableau de byte concatene
+     */
+    private byte[] arrayConcat(byte[] a, byte[] b) {
         byte[] result = new byte[a.length + b.length];
         System.arraycopy(a,0,result,0,a.length);
         System.arraycopy(b,0,result,a.length,b.length);
         return result;
     }
+
+    /**
+     * fonction permettant d'enregistrer les donnees reçu dans un buffer
+     * pour la reconstruction du fichier
+     * @param data liste de byte a append au buffer
+     */
     public void ReceiveFrame(byte[] data) {
         if (data == null ) {return;}
         if (data.length <= 0) {return;}
@@ -118,6 +157,11 @@ public class Transport {
         ci.numPaquets++;
     }
 
+    /**
+     * fonction permettant d'etablir les paramètres de clientInstance
+     * et de creer un nouveau buffer de donnees
+     * @param data donnees reçu dans le premier paquet
+     */
     public void ReceiveFirstFrame(byte[] data)
     {
         ci.numPaquets = 0;
@@ -126,7 +170,13 @@ public class Transport {
                         ((data[2] & 0xff) << 8) |
                         (data[3] & 0xff);
         ci.filename = new String(Arrays.copyOfRange(data, 4, data.length));
+        ci._bytes = new byte[0];
     }
+
+    /**
+     * fonction permettant d'acceder au buffer de reconstruction une foit la communication termine
+     * @return array de byute de donnees du fichier à reconstruire
+     */
     public byte[] receivedFile() {
         return ci._bytes;
     }

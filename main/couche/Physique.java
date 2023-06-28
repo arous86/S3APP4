@@ -6,13 +6,18 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
 
+/**
+ * Cette classe s'occupe d'etablir la connexion entre le client et le serveur
+ * et d'envoyer les trames au serveur. Elle s'occupe aussi de recevoir du
+ * côte du serveur où elle reste en ecoute passive.
+ */
 public class Physique {
-    /**
-     * Cette classe s'occupe d'établir la connexion entre le client et le serveur
-     * et d'envoyer les trames au serveur. Elle s'occupe aussi de recevoir du
-     * côté du serveur où elle reste en écoute passive.
-     */
     private static Physique instance = null;
+
+    /**
+     * Permet d'obtenir le singleton
+     * @return instance singleton de Physique
+     */
     public static Physique getInstance() {
         if (instance == null) {
             instance = new Physique();
@@ -20,6 +25,14 @@ public class Physique {
         return instance;
     }
     private static Socket socket;
+
+    /**
+     * Fonction qui envoie une trame et attend une reponse sous forme de trame
+     * @param serverIP ip du server a se connecter
+     * @param port port du server a se connecter
+     * @param frameToSend format de byte de l'objet Trame
+     * @return la trame reçu en reponse
+     */
     public Trame SendFrame(String serverIP, int port, byte[] frameToSend) {
         try {
 
@@ -29,14 +42,14 @@ public class Physique {
                 socket.setSoTimeout(1000);
             }
 
-            // Envoi des données au serveur
+            // Envoi des donnees au serveur
             OutputStream outputStream = socket.getOutputStream();
             outputStream.write(frameToSend);
             System.out.println("sent to server:");
             System.out.println(Arrays.toString(frameToSend));
 
 
-            // Attente de la réponse du serveur (ACK)
+            // Attente de la reponse du serveur (ACK)
             //
             InputStream inputStream = socket.getInputStream();
 
@@ -56,15 +69,20 @@ public class Physique {
             return new Trame();
         }
     }
+
+    /**
+     * Fonction de reception d'une communication d'un client
+     * @param port port du serveur
+     */
     public void ReceiveFrames(int port){
         try{
             ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("Serveur en attente de connexions...");
 
             Socket clientSocket = serverSocket.accept(); // Attente de la connexion d'un client
-            System.out.println("Client connecté.");
+            System.out.println("Client connecte.");
             clientSocket.setSoTimeout(10000);
-            // Lecture des données envoyées par le client
+            // Lecture des donnees envoyees par le client
             InputStream inputStream = clientSocket.getInputStream();
 
             byte[] receivedData = new byte[256];
@@ -93,11 +111,15 @@ public class Physique {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Fonction permettant de fermer le socket de communication
+     */
     public void CloseSocket() {
         try {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
-                socket = null; // Réinitialise le socket à null après la fermeture
+                socket = null; // Reinitialise le socket à null après la fermeture
             }
         } catch (IOException e) {
             e.printStackTrace();

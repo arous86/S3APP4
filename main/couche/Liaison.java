@@ -9,10 +9,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.zip.CRC32;
 
+/**
+ * Classe permettant de gerer la couche liason de la communication.
+ * Cette classe ajoute le CRC à la trame et verifie les CRC des trames reçu
+ */
 public class Liaison {
     private ArrayList<Trame> trames;
     private static Liaison instance = null;
 
+    /**
+     * Permet d'obtenir le singleton
+     * @return instance singleton de Liaison
+     */
     public static Liaison getInstance() {
         if (instance == null) {
             instance = new Liaison();
@@ -20,18 +28,29 @@ public class Liaison {
         return instance;
     }
 
+    /**
+     * Fonction permettant de generer un CRC
+     * @param bytes Array de bytes à signer
+     * @return la valeur du CRC calculer
+     */
     private static long GenerateCRC(byte[] bytes) {
-        // Créer une instance de CRC32
+        // Creer une instance de CRC32
         CRC32 crc32 = new CRC32();
         crc32.reset();
 
-        // Mettre à jour le CRC32 avec les données
+        // Mettre à jour le CRC32 avec les donnees
         crc32.update(bytes);
 
-        // Obtenir la valeur CRC calculée en long
+        // Obtenir la valeur CRC calculee en long
         return crc32.getValue();
     }
 
+    /**
+     * Fonction qui permet de gerer l'envoies d'une liste de trame
+     * @param _trames liste de trames
+     * @param serverIP ip du serveur de reception
+     * @param port port du serveur de reception
+     */
     public void EnvoyerTrames(ArrayList<Trame> _trames, String serverIP, int port) {
 
         instance.trames = _trames;
@@ -57,13 +76,20 @@ public class Liaison {
             }
 
             if (tentative == maxTentatives) {
-                System.out.println("Trame non envoyée après 3 tentatives");
+                System.out.println("Trame non envoyee après 3 tentatives");
                 return;
             }
         }
         phys.CloseSocket();
     }
 
+    /**
+     * Fonction qui permet de gerer la reception d'une liste de trame
+     * @param receivedData buffer de byte recu
+     * @param numbytes nombre de byte dans le buffer
+     * @param clientSocket socket du client pour repondre ACK ou NACK
+     * @throws IOException si il y a une erreur avec le stream de donnees
+     */
     public static void RecevoirTrames(byte[] receivedData, int numbytes, Socket clientSocket) throws IOException {
         Trame trameRecu = new Trame();
         trameRecu.decode(receivedData, numbytes);
@@ -94,6 +120,13 @@ public class Liaison {
 
     }
 
+    /**
+     * Fonction permetant de gerer la reception de la premiere trame de la recepton d'un fichier
+     * @param receivedData buffer de byte recu
+     * @param numbytes nombre de byte dans le buffer
+     * @param clientSocket socket du client pour repondre ACK ou NACK
+     * @throws IOException si il y a une erreur avec le stream de donnees
+     */
     public static void RecevoirPremiereTrame(byte[] receivedData, int numbytes, Socket clientSocket) throws IOException {
         Trame trameRecu = new Trame();
         trameRecu.decode(receivedData, numbytes);
